@@ -1,6 +1,7 @@
 const http = require('http');
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
+const config = require('./config');
 
 const server = http.createServer((req, res ) => {
   const parsedUrl = url.parse(req.url);
@@ -52,6 +53,7 @@ const server = http.createServer((req, res ) => {
       const payloadString = JSON.stringify(payload);
 
       // return the response
+      res.setHeader('Content-Type', 'application/json');
       res.writeHead(statusCode);
       res.end(payloadString); 
       
@@ -61,8 +63,8 @@ const server = http.createServer((req, res ) => {
   })
 });
 
-server.listen(3000, () => {
-  console.log(`server listening on localhost:3000...`);
+server.listen(config.port, () => {
+  console.log(`server listening on port: ${config.port} in ${config.envName} mode`);
 });
 
 //Define handlers, lately known as controllers
