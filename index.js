@@ -1,5 +1,6 @@
 const http = require('http');
 const url = require('url');
+const { StringDecoder } = require('string_decoder');
 
 const server = http.createServer((req, res ) => {
   const parsedUrl = url.parse(req.url);
@@ -16,11 +17,23 @@ const server = http.createServer((req, res ) => {
   // Get the headers as an object
   const headers = req.headers;
 
-  // send the response
-  res.end('hello world\n');
+  // Get the payload, if any
+  const decoder = new StringDecoder('utf-8');
+  let buffer = '';
 
-  // log the request path
-  console.log('Request received with these headers: ', headers);
+  req.on('data', (data) => {
+    buffer += decoder.write(data);
+  })
+
+  req.on('end', () => {
+    buffer += decoder.end()
+
+    // send the response
+    res.end('hello world!\n');
+
+    // log the request path
+    console.log('Request received with payload ', buffer);
+  })
 });
 
 server.listen(3000, () => {
