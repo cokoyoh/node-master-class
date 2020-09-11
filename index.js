@@ -94,9 +94,8 @@ const unifiedServer = (req, res) => {
 //Define handlers, lately known as controllers
 const handlers = {};
 
-handlers.sample = (data, callback) => {
-  // callback a http status code, and a payload object
-  callback(406, { 'name': 'sample controller' });
+handlers.ping = (data, callback) => {
+  callback(200);
 };
 
 // Not found controller
@@ -106,6 +105,6 @@ handlers.notFound = (data, callback) => {
 
 // Define a request router
 const router = {
-  'sample': handlers.sample,
-  'notFound' : handlers.notFound
+  'ping': handlers.ping,
+  'notFound': handlers.notFound
 };
