@@ -1,9 +1,37 @@
 const http = require('http');
+const https = require('https');
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
 const config = require('./config');
+const fs = require('fs');
 
-const server = http.createServer((req, res ) => {
+// Instatiating the http server
+const httpServer = http.createServer((req, res ) => {
+  unifiedServer(req, res);
+});
+
+// starting the http server
+httpServer.listen(config.httpPort, () => {
+  console.log(`server listening on port: ${config.httpPort}`);
+});
+
+// Instatiating https server
+const httpsServerOptions = {
+  key: fs.readFileSync('./https/key.pem'),
+  cert: fs.readFileSync('./https/cert.pem')
+};
+
+const httpsServer = https.createServer(httpsServerOptions, (req, res ) => {
+  unifiedServer(req, res);
+});
+
+// starting the http server
+httpsServer.listen(config.httpsPort, () => {
+  console.log(`server listening on port: ${config.httpsPort}`);
+});
+
+// all the server logic for pth http and https server
+const unifiedServer = (req, res) => {
   const parsedUrl = url.parse(req.url);
   
   const path = parsedUrl.pathname;
@@ -55,17 +83,13 @@ const server = http.createServer((req, res ) => {
       // return the response
       res.setHeader('Content-Type', 'application/json');
       res.writeHead(statusCode);
-      res.end(payloadString); 
+      res.end(payloadString);
       
       // log the request path
       console.log('Returning this response: ', statusCode, payloadString);
     })
-  })
-});
-
-server.listen(config.port, () => {
-  console.log(`server listening on port: ${config.port} in ${config.envName} mode`);
-});
+  });
+}
 
 //Define handlers, lately known as controllers
 const handlers = {};
