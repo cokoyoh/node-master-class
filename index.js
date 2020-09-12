@@ -34,13 +34,13 @@ httpsServer.listen(config.httpsPort, () => {
 
 // all the server logic for pth http and https server
 const unifiedServer = (req, res) => {
-  const parsedUrl = url.parse(req.url);
+  const parsedUrl = url.parse(req.url, true);
   
   const path = parsedUrl.pathname;
   const trimmedPath = path.replace(/^\/+|\/+$/g, '');
 
   //Get the query string as an object
-  const queryStringObject = parsedUrl.query;
+  const query = parsedUrl.query;
 
   //Get the http method
   const method = req.method.toLowerCase();
@@ -65,7 +65,7 @@ const unifiedServer = (req, res) => {
     //construct the data object to send to the handler
     const data = {
       trimmedPath,
-      queryStringObject,
+      query,
       method,
       headers,
       payload: helpers.parseJsonToObject(buffer)
